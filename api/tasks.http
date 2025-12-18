@@ -1,0 +1,26 @@
+@host = http://localhost:3001
+@contentType = application/json
+
+### 1. Get all tasks
+GET {{host}}/tasks
+
+### 2. Update task status (Partial Update)
+# This simulates moving a card to the "Done" column
+PATCH {{host}}/tasks/1
+Content-Type: {{contentType}}
+
+{
+  "status": "DONE",
+  "progress": 100,
+  "completed": true
+}
+
+### 3. Update task details (Partial Update)
+# This simulates editing the text content of a task
+PATCH {{host}}/tasks/2
+Content-Type: {{contentType}}
+
+{
+  "title": "Update Frontend to use REST",
+  "description": "Switching from GraphQL to REST API calls"
+}
