@@ -63,3 +63,16 @@ src/
 ```
 
 
+### Docker
+To run the application using Docker, follow these steps:
+1. Build the Docker image:
+   ```bash
+   docker build -t todo-backend .
+   ```
+   
+2. Run the Docker container:
+   ```bash
+    docker run -p 3001:3001 todo-backend
+    ```
+   
+
