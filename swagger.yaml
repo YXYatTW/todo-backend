@@ -1,0 +1,241 @@
+openapi: 3.0.0
+info:
+  title: Todo Backend API
+  description: API documentation for the Todo backend application
+  version: 1.0.0
+  contact:
+    name: API Support
+servers:
+  - url: http://localhost:3001
+    description: Development server
+
+tags:
+  - name: tasks
+    description: Task management endpoints
+
+paths:
+  /tasks:
+    get:
+      tags:
+        - tasks
+      summary: Get all tasks
+      description: Retrieve a list of all tasks
+      operationId: getAllTasks
+      responses:
+        '200':
+          description: Successfully retrieved all tasks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'
+              example:
+                - id: '1'
+                  title: 'Complete project documentation'
+                  description: 'Write comprehensive documentation for the project'
+                  status: 'in-progress'
+                  completed: false
+                  progress: 50
+                  date: '2025-12-26'
+                  emoji: '📝'
+                  image: 'https://example.com/image.jpg'
+                  profileImage: 'https://example.com/profile.jpg'
+
+  /tasks/{id}:
+    patch:
+      tags:
+        - tasks
+      summary: Update a task
+      description: Update specific fields of a task by ID
+      operationId: updateTask
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the task to update
+          schema:
+            type: string
+          example: '1'
+      requestBody:
+        required: true
+        description: Fields to update in the task
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTaskDto'
+            examples:
+              updateTitle:
+                summary: Update task title
+                value:
+                  title: 'Updated task title'
+              updateProgress:
+                summary: Update task progress
+                value:
+                  progress: 75
+                  status: 'in-progress'
+              completeTask:
+                summary: Mark task as completed
+                value:
+                  completed: true
+                  status: 'completed'
+                  progress: 100
+      responses:
+        '200':
+          description: Task successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+              example:
+                id: '1'
+                title: 'Updated task title'
+                description: 'Write comprehensive documentation for the project'
+                status: 'in-progress'
+                completed: false
+                progress: 75
+                date: '2025-12-26'
+                emoji: '📝'
+                image: 'https://example.com/image.jpg'
+                profileImage: 'https://example.com/profile.jpg'
+        '404':
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                statusCode: 404
+                message: 'Task with ID 1 not found'
+                error: 'Not Found'
+        '400':
+          description: Invalid request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                statusCode: 400
+                message: ['progress must be a number', 'completed must be a boolean']
+                error: 'Bad Request'
+
+components:
+  schemas:
+    Task:
+      type: object
+      required:
+        - id
+        - title
+        - status
+        - completed
+      properties:
+        id:
+          type: string
+          description: The unique identifier of the task
+          example: '1'
+        title:
+          type: string
+          description: The title of the task
+          example: 'Complete project documentation'
+        description:
+          type: string
+          description: Detailed description of the task
+          example: 'Write comprehensive documentation for the project'
+          nullable: true
+        image:
+          type: string
+          description: URL of the task image
+          example: 'https://example.com/image.jpg'
+          nullable: true
+        status:
+          type: string
+          description: Current status of the task
+          example: 'in-progress'
+          enum:
+            - todo
+            - in-progress
+            - completed
+            - blocked
+        completed:
+          type: boolean
+          description: Whether the task is completed
+          example: false
+        date:
+          type: string
+          format: date
+          description: The date associated with the task
+          example: '2025-12-26'
+          nullable: true
+        progress:
+          type: number
+          description: Progress percentage of the task (0-100)
+          minimum: 0
+          maximum: 100
+          example: 50
+          nullable: true
+        emoji:
+          type: string
+          description: Emoji associated with the task
+          example: '📝'
+          nullable: true
+        profileImage:
+          type: string
+          description: URL of the profile image
+          example: 'https://example.com/profile.jpg'
+          nullable: true
+
+    UpdateTaskDto:
+      type: object
+      description: Data transfer object for updating a task
+      properties:
+        title:
+          type: string
+          description: The title of the task
+          example: 'Updated task title'
+        description:
+          type: string
+          description: Detailed description of the task
+          example: 'Updated description'
+        status:
+          type: string
+          description: Current status of the task
+          example: 'in-progress'
+          enum:
+            - todo
+            - in-progress
+            - completed
+            - blocked
+        completed:
+          type: boolean
+          description: Whether the task is completed
+          example: false
+        progress:
+          type: number
+          description: Progress percentage of the task (0-100)
+          minimum: 0
+          maximum: 100
+          example: 75
+
+    Error:
+      type: object
+      required:
+        - statusCode
+        - message
+      properties:
+        statusCode:
+          type: integer
+          description: HTTP status code
+          example: 404
+        message:
+          oneOf:
+            - type: string
+            - type: array
+              items:
+                type: string
+          description: Error message or list of validation errors
+          example: 'Task not found'
+        error:
+          type: string
+          description: Error type
+          example: 'Not Found'
+
