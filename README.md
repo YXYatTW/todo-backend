@@ -75,4 +75,8 @@ To run the application using Docker, follow these steps:
     docker run -p 3001:3001 todo-backend
     ```
    
+### Swagger API Documentation
+Once the application is running, you can access the Swagger API documentation at:
+http://localhost:3001/api
+   
 
